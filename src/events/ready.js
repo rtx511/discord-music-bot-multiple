@@ -1,4 +1,5 @@
 const { ActivityType } = require("discord.js");
+const { joinVoiceChannel } = require("@discordjs/voice");
 const chalk = require("chalk");
 const moment = require("moment");
 require("moment-duration-format");
@@ -53,6 +54,27 @@ ${chalk.greenBright("            © Wick® Studio")}
             if (client.config.enableLogging) {
                 client.log(chalk.greenBright("✅ Bot is fully operational and ready to serve!"));
                 client.log(chalk.yellowBright("📜 Copyright Wick® Studio"));
+            }
+
+            if (client.config.voiceChannelId) {
+                try {
+                    const channel = await client.channels.fetch(client.config.voiceChannelId);
+                    if (channel && channel.isVoiceBased()) {
+                        joinVoiceChannel({
+                            channelId: channel.id,
+                            guildId: channel.guild.id,
+                            adapterCreator: channel.guild.voiceAdapterCreator,
+                            selfDeaf: false,
+                        });
+                        if (client.config.enableLogging) {
+                            client.log(chalk.cyanBright(`🔊 Joined voice channel: ${channel.name}`));
+                        }
+                    } else if (client.config.enableLogging) {
+                        client.log(chalk.redBright("❌ Provided voiceChannelId is not voice based."));
+                    }
+                } catch (err) {
+                    console.error(chalk.redBright("❌ Failed to join voice channel:"), err);
+                }
             }
         } catch (error) {
             console.error(chalk.redBright("❌ Error in ready event:"), error);

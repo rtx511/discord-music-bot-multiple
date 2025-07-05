@@ -88,7 +88,7 @@ The `config.js` file allows you to customize the bot's behavior. Below are the a
 The `tokens.json` file holds your bot tokens:
 - **token:** The bot token.
 - **clientId:** The Discord application client ID.
-- **voiceChannelId:** Default voice channel the bot should join.
+- **voiceChannelId:** Default voice channel the bot should join. The bot will automatically connect to this channel on startup.
 - **logChannelId:** Channel ID used by the main bot for logs.
 - **main:** Set to `true` only for the main bot.
 
