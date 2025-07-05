@@ -56,19 +56,23 @@ ${chalk.greenBright("            © Wick® Studio")}
             }
 
             if (client.config.voiceChannelId) {
-                try {
-                    const channel = await client.channels.fetch(client.config.voiceChannelId);
-                    if (channel && channel.isVoiceBased()) {
-                        await client.distube.voices.join(channel, { selfDeaf: false });
-                        if (client.config.enableLogging) {
-                            client.log(chalk.cyanBright(`🔊 Joined voice channel: ${channel.name}`));
+                const joinDefault = async () => {
+                    try {
+                        const channel = await client.channels.fetch(client.config.voiceChannelId);
+                        if (channel && channel.isVoiceBased()) {
+                            await client.distube.voices.join(channel, { selfDeaf: false });
+                            if (client.config.enableLogging) {
+                                client.log(chalk.cyanBright(`🔊 Joined voice channel: ${channel.name}`));
+                            }
+                        } else if (client.config.enableLogging) {
+                            client.log(chalk.redBright("❌ Provided voiceChannelId is not voice based."));
                         }
-                    } else if (client.config.enableLogging) {
-                        client.log(chalk.redBright("❌ Provided voiceChannelId is not voice based."));
+                    } catch (err) {
+                        console.error(chalk.redBright("❌ Failed to join voice channel:"), err);
                     }
-                } catch (err) {
-                    console.error(chalk.redBright("❌ Failed to join voice channel:"), err);
-                }
+                };
+                // Delay joining slightly to ensure all caches are ready
+                setTimeout(joinDefault, 1000);
             }
         } catch (error) {
             console.error(chalk.redBright("❌ Error in ready event:"), error);
