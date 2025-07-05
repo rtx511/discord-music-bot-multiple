@@ -87,8 +87,8 @@
       }
     },
     "events": {
-      "playPlayer": "🔊 Playing: {Player} | Requested by: {user}",
-      "addPlayer": "🔊 Added `{Player}` - `{duration}` to the queue by {user}",
+      "playSong": "🔊 Playing: {song} | Requested by: {user}",
+      "addSong": "🔊 Added `{song}` - `{duration}` to the queue by {user}",
       "addList": "🔊 Added `{playlist}` playlist ({count} Players) to queue\nVolume: `{volume}%` | Loop: `{loop}`",
       "empty": "⛔ Voice channel is empty! Leaving the channel...",
       "finish": "🏁 Queue finished!",
