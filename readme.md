@@ -40,36 +40,25 @@
 
 3. **Configure the Bot:**
 
-   - Rename `config.example.js` to `config.js`.
-   - Fill in the required fields in `config.js` with your bot's token, client ID, and other configurations.
+   - Create a `config.js` file and adjust the general settings (prefix, language, etc.).
+   - Add your bot tokens and related information inside `tokens.json`.
 
-   ```javascript
-   // config.js
-
-   module.exports = {    
-       token: "YOUR_BOT_TOKEN", // Your bot's token
-       clientId: "YOUR_CLIENT_ID", // Your bot's client ID
-       prefix: "!", // Command prefix
-       language: "en", // 'ar' for Arabic | 'en' for English
-       verbose: true,
-       musicCardPath: "./musicard.png",
-       enableLogging: true,
-       djRoleName: "DJ",
-       aliases: {
-         play: ["p", "start", "playmusic"],
-         pause: ["hold", "stopmusic"],
-         resume: ["r", "continue"],
-         skip: ["s", "next", "jump"],
-         stop: ["end", "terminate"],
-         volumeUp: ["vup", "increasevolume"],
-         volumeDown: ["vdown", "decreasevolume"],
-         repeat: ["loop"],
-         queue: ["q"],
-         nowplaying: ["np"],
-         clear: ["c"],
-         remove: ["rm", "delete"]
-       }
-   };
+   ```json
+   // tokens.json
+   [
+     {
+       token: "MAIN_BOT_TOKEN",
+       clientId: "MAIN_CLIENT_ID",
+       voiceChannelId: "VOICE_CHANNEL_ID",
+       logChannelId: "LOG_CHANNEL_ID",
+       main: true
+     },
+     {
+       token: "SECONDARY_BOT_TOKEN",
+       clientId: "SECONDARY_CLIENT_ID",
+       voiceChannelId: "VOICE_CHANNEL_ID"
+     }
+   ]
    ```
 
 4. **Register Custom Fonts:**
@@ -88,8 +77,6 @@
 
 The `config.js` file allows you to customize the bot's behavior. Below are the available configurations:
 
-- **token:** Your Discord bot token.
-- **clientId:** Your Discord bot's client ID.
 - **prefix:** The prefix used for bot commands (e.g., `!play`).
 - **language:** Set to `'ar'` for Arabic or `'en'` for English.
 - **verbose:** Enable or disable verbose logging.
@@ -97,6 +84,15 @@ The `config.js` file allows you to customize the bot's behavior. Below are the a
 - **enableLogging:** Toggle logging of events and errors.
 - **djRoleName:** Name of the role that has DJ permissions.
 - **aliases:** Define command aliases for easier access.
+
+The `tokens.json` file holds your bot tokens:
+- **token:** The bot token.
+- **clientId:** The Discord application client ID.
+- **voiceChannelId:** Default voice channel the bot should join.
+- **logChannelId:** Channel ID used by the main bot for logs.
+- **main:** Set to `true` only for the main bot.
+
+Bot tokens, client IDs and default voice channels are defined in `tokens.json`.
 
 ## 🎮 Usage
 

@@ -8,9 +8,7 @@
 Copyright (c) 2024 Wick Studio
 */
 
-module.exports = {    
-    token: "", // token
-    clientId: "", // bot id
+module.exports = {
     prefix: "!", // prefix
     language: "ar", // ar for arabic | en for english
     verbose: true,
