@@ -6,6 +6,13 @@ module.exports = {
         if (message.author.bot) return;
         if (!message.content.startsWith(client.config.prefix)) return;
 
+        if (client.config.voiceChannelId) {
+            const userChannel = message.member?.voice?.channelId;
+            if (!userChannel || userChannel !== client.config.voiceChannelId) {
+                return;
+            }
+        }
+
         const args = message.content.slice(client.config.prefix.length).trim().split(/ +/);
         const commandName = args.shift().toLowerCase();
 

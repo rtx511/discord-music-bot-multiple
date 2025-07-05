@@ -1,5 +1,4 @@
 const { ActivityType } = require("discord.js");
-const { joinVoiceChannel } = require("@discordjs/voice");
 const chalk = require("chalk");
 const moment = require("moment");
 require("moment-duration-format");
@@ -60,12 +59,7 @@ ${chalk.greenBright("            © Wick® Studio")}
                 try {
                     const channel = await client.channels.fetch(client.config.voiceChannelId);
                     if (channel && channel.isVoiceBased()) {
-                        joinVoiceChannel({
-                            channelId: channel.id,
-                            guildId: channel.guild.id,
-                            adapterCreator: channel.guild.voiceAdapterCreator,
-                            selfDeaf: false,
-                        });
+                        await client.distube.voices.join(channel, { selfDeaf: false });
                         if (client.config.enableLogging) {
                             client.log(chalk.cyanBright(`🔊 Joined voice channel: ${channel.name}`));
                         }
