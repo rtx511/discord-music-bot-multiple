@@ -9,7 +9,7 @@ module.exports = {
                 queue.textChannel = song.metadata.message.channel;
             }
 
-            if (queue.client.config.enableLogging) console.log(queue.client.localization.get('events.addSong', { song: song.name, duration: formatTime(song.duration), user: song.user.tag }));
+            if (queue.client.config.enableLogging) queue.client.log(queue.client.localization.get('events.addSong', { song: song.name, duration: formatTime(song.duration), user: song.user.tag }));
 
             if (queue.textChannel && typeof queue.textChannel.send === "function") {
                 const embed = new EmbedBuilder()

@@ -6,10 +6,11 @@ const path = require("path");
 const fs = require("fs");
 const { registerCustomFonts } = require("./src/utils/registerFonts");
 const config = require("./config.js");
+const tokens = require("./tokens.json");
 const sodium = require('libsodium-wrappers');
 const Localization = require("./src/utils/localization");
 
-(async () => {
+async function startBot({ token, clientId, voiceChannelId, logChannelId, main }) {
     try {
         await sodium.ready;
 
@@ -25,7 +26,26 @@ const Localization = require("./src/utils/localization");
             partials: [Partials.Channel],
         });
 
-        client.config = config;
+        client.config = { ...config, token, clientId, voiceChannelId, logChannelId };
+        if (!main) {
+            client.config.enableLogging = false;
+        }
+        client.isMain = !!main;
+
+        client.log = async (msg) => {
+            if (!client.config.enableLogging) return;
+            console.log(msg);
+            if (client.isMain && client.config.logChannelId) {
+                try {
+                    const channel = await client.channels.fetch(client.config.logChannelId);
+                    if (channel && typeof channel.send === 'function') {
+                        await channel.send(msg);
+                    }
+                } catch (err) {
+                    console.error('❌ Failed to send log message:', err);
+                }
+            }
+        };
 
         client.localization = new Localization(client);
 
@@ -39,13 +59,13 @@ const Localization = require("./src/utils/localization");
             const command = require(filePath);
             if ("name" in command && "execute" in command) {
                 client.commands.set(command.name, command);
-                console.log(`✅ Loaded command: ${command.name}`);
+                client.log(`✅ Loaded command: ${command.name}`);
 
                 const aliases = config.aliases[command.name];
                 if (aliases && Array.isArray(aliases)) {
                     aliases.forEach(alias => {
                         client.commands.set(alias, command);
-                        console.log(`✅ Registered alias '${alias}' for command '${command.name}'`);
+                        client.log(`✅ Registered alias '${alias}' for command '${command.name}'`);
                     });
                 }
             } else {
@@ -59,13 +79,13 @@ const Localization = require("./src/utils/localization");
         for (const file of eventFiles) {
             const filePath = path.join(eventsPath, file);
             const event = require(filePath);
-            if (event.once) {
-                client.once(event.name, (...args) => event.execute(...args, client));
-                console.log(`📂 Loaded event (once): ${event.name} from ${filePath}`);
-            } else {
-                client.on(event.name, (...args) => event.execute(...args, client));
-                console.log(`📂 Loaded event: ${event.name} from ${filePath}`);
-            }
+                if (event.once) {
+                    client.once(event.name, (...args) => event.execute(...args, client));
+                    client.log(`📂 Loaded event (once): ${event.name} from ${filePath}`);
+                } else {
+                    client.on(event.name, (...args) => event.execute(...args, client));
+                    client.log(`📂 Loaded event: ${event.name} from ${filePath}`);
+                }
         }
 
         client.distube = new DisTube(client, {
@@ -86,7 +106,7 @@ const Localization = require("./src/utils/localization");
                     }
 
                     if (client.config.enableLogging) {
-                        console.log(client.localization.get('events.playSong', { song: song.name, user: song.user.tag }));
+                        client.log(client.localization.get('events.playSong', { song: song.name, user: song.user.tag }));
                     }
 
                     if (queue.currentMessage) {
@@ -109,7 +129,7 @@ const Localization = require("./src/utils/localization");
                     }
 
                     if (client.config.enableLogging) {
-                        console.log(client.localization.get('events.addSong', { song: song.name, duration: formatTime(song.duration), user: song.user.tag }));
+                        client.log(client.localization.get('events.addSong', { song: song.name, duration: formatTime(song.duration), user: song.user.tag }));
                     }
 
                     if (queue.textChannel && typeof queue.textChannel.send === "function") {
@@ -125,11 +145,32 @@ const Localization = require("./src/utils/localization");
                     console.error("❌ Error in addSong event:", error);
                 }
             })
-        await client.login(client.config.token);
-        console.log("🚀 Bot is online!");
+        await client.login(token);
+        client.log(`🚀 Bot ${client.user.tag} is online!`);
+        return client;
     } catch (error) {
         console.error("❌ Failed to initialize the bot:", error);
-        process.exit(1);
+    }
+}
+
+const tokensToUse = Array.isArray(tokens) ? tokens : [];
+if (tokensToUse.length === 0) {
+    console.error('❌ No bot tokens found in tokens.json');
+    process.exit(1);
+}
+
+const clients = [];
+let mainClient;
+
+(async () => {
+    for (const botConfig of tokensToUse) {
+        const client = await startBot(botConfig);
+        if (client) {
+            clients.push(client);
+            if (botConfig.main && !mainClient) {
+                mainClient = client;
+            }
+        }
     }
 })();
 

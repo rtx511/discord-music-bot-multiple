@@ -8,7 +8,7 @@ module.exports = {
                 queue.textChannel = playlist.metadata.message.channel;
             }
 
-            if (queue.client.config.enableLogging) console.log(`🎶 Added playlist: ${playlist.name} | ${playlist.songs.length} songs`);
+            if (queue.client.config.enableLogging) queue.client.log(`🎶 Added playlist: ${playlist.name} | ${playlist.songs.length} songs`);
 
             if (queue.textChannel && typeof queue.textChannel.send === "function") {
                 const embed = new EmbedBuilder()

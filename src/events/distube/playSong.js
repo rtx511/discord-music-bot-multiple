@@ -8,7 +8,7 @@ module.exports = {
             if (!queue.textChannel) {
                 if (song.metadata && song.metadata.message && song.metadata.message.channel) {
                     queue.textChannel = song.metadata.message.channel;
-                    console.log('✅ Text channel successfully assigned from metadata.');
+                    if (client.config.enableLogging) client.log('✅ Text channel successfully assigned from metadata.');
                 } else {
                     console.error('❌ No valid text channel found for queue.');
                     return;
@@ -16,7 +16,7 @@ module.exports = {
             }
 
             if (client.config.enableLogging) {
-                console.log(client.localization.get('events.playSong', { song: song.name, user: song.user.tag }));
+                client.log(client.localization.get('events.playSong', { song: song.name, user: song.user.tag }));
             }
 
             if (queue.currentMessage) {
@@ -27,9 +27,9 @@ module.exports = {
                 queue.initiatorId = undefined;
             }
 
-            console.log('ℹ️ Attempting to send music card...');
+            if (client.config.enableLogging) client.log('ℹ️ Attempting to send music card...');
             await sendMusicCard(queue, song, client.localization);
-            console.log('✅ Music card sent successfully.');
+            if (client.config.enableLogging) client.log('✅ Music card sent successfully.');
         } catch (error) {
             console.error('❌ Error in playSong event:', error);
         }
